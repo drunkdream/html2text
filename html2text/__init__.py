@@ -68,6 +68,7 @@ class HTML2Text(html.parser.HTMLParser):
         self.use_automatic_links = config.USE_AUTOMATIC_LINKS  # covered in cli
         self.hide_strikethrough = False  # covered in cli
         self.mark_code = config.MARK_CODE
+        self.backquote_code = config.BACKQUOTE_CODE
         self.wrap_list_items = config.WRAP_LIST_ITEMS  # covered in cli
         self.wrap_links = config.WRAP_LINKS  # covered in cli
         self.pad_tables = config.PAD_TABLES  # covered in cli
@@ -656,7 +657,18 @@ class HTML2Text(html.parser.HTMLParser):
                 self.pre = False
                 if self.mark_code:
                     self.out("\n[/code]")
+
             self.p()
+
+        if tag == "code" and self.pre:
+            if self.backquote_code:
+                if start:
+                    code_class = ""
+                    if attrs.get("class"):
+                        code_class = attrs["class"]
+                    self.out("\n```%s" % code_class)
+                else:
+                    self.out("\n```")
 
     # TODO: Add docstring for these one letter functions
     def pbr(self):
@@ -715,11 +727,12 @@ class HTML2Text(html.parser.HTMLParser):
                 bq += " "
 
             if self.pre:
-                if not self.list:
-                    bq += "    "
-                # else: list content is already partially indented
-                for i in range(len(self.list)):
-                    bq += "    "
+                if not self.backquote_code:
+                    if not self.list:
+                        bq += "    "
+                    # else: list content is already partially indented
+                    for i in range(len(self.list)):
+                        bq += "    "
                 data = data.replace("\n", "\n" + bq)
 
             if self.startpre:
