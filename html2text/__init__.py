@@ -21,6 +21,7 @@ from html2text.utils import (
     pad_tables_in_text,
     skipwrap,
     unifiable_n,
+    code_lang_list
 )
 
 __version__ = (2019, 8, 11)
@@ -665,7 +666,15 @@ class HTML2Text(html.parser.HTMLParser):
                 if start:
                     code_class = ""
                     if attrs.get("class"):
-                        code_class = attrs["class"]
+                        for it in attrs["class"].lower().split():
+                            for lang in code_lang_list:
+                                if lang in it:
+                                    code_class = lang
+                                    break
+                            if code_class:
+                                break
+                        if not code_class:
+                            code_class = attrs.get("class")
                     self.out("\n```%s" % code_class)
                 else:
                     self.out("\n```")

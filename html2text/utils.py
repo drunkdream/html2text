@@ -8,6 +8,7 @@ unifiable_n = {
     if k != "nbsp"
 }
 
+code_lang_list = ['python', 'bash', 'java', 'xml', 'yaml', 'html', 'javascript', 'json']
 
 def hn(tag):
     if tag[0] == "h" and len(tag) == 2:
